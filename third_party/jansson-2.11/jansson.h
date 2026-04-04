@@ -1,0 +1,107 @@
+/* jansson.h - JSON library
+ *
+ * Copyright (c) 2009-2018 Petri Lehtinen <petri@digip.org>
+ *
+ * Jansson is free software; you can redistribute it and/or modify it
+ * under the terms of the MIT license. See LICENSE for details.
+ */
+
+#ifndef JANSSON_H
+#define JANSSON_H
+
+#include <stddef.h>
+#include <stdarg.h>
+
+#define JANSSON_MAJOR_VERSION  2
+#define JANSSON_MINOR_VERSION  11
+#define JANSSON_MICRO_VERSION  0
+#define JANSSON_VERSION        "2.11"
+#define JANSSON_VERSION_HEX    ((JANSSON_MAJOR_VERSION << 16) | \
+                                (JANSSON_MINOR_VERSION << 8)  | \
+                                (JANSSON_MICRO_VERSION))
+
+typedef enum {
+    JSON_OBJECT,
+    JSON_ARRAY,
+    JSON_STRING,
+    JSON_INTEGER,
+    JSON_REAL,
+    JSON_TRUE,
+    JSON_FALSE,
+    JSON_NULL
+} json_type;
+
+typedef struct json_t {
+    json_type type;
+    size_t refcount;
+} json_t;
+
+typedef long long json_int_t;
+
+typedef struct {
+    const char *text;
+    const char *source;
+    int line;
+    int column;
+    size_t position;
+} json_error_t;
+
+#define JSON_REJECT_DUPLICATES  0x1
+#define JSON_DISABLE_EOF_CHECK  0x2
+#define JSON_DECODE_ANY         0x4
+#define JSON_DECODE_INT_AS_REAL 0x8
+#define JSON_ALLOW_NUL          0x10
+
+#define JSON_COMPACT     0x20
+#define JSON_ENSURE_ASCII 0x40
+#define JSON_SORT_KEYS    0x80
+#define JSON_ENCODE_ANY   0x200
+#define JSON_INDENT(n)    ((n) & 0x1F)
+
+#define json_typeof(json) ((json)->type)
+#define json_is_object(json)  ((json) && json_typeof(json) == JSON_OBJECT)
+#define json_is_array(json)   ((json) && json_typeof(json) == JSON_ARRAY)
+#define json_is_string(json)  ((json) && json_typeof(json) == JSON_STRING)
+#define json_is_integer(json) ((json) && json_typeof(json) == JSON_INTEGER)
+#define json_is_real(json)    ((json) && json_typeof(json) == JSON_REAL)
+#define json_is_true(json)    ((json) && json_typeof(json) == JSON_TRUE)
+#define json_is_false(json)   ((json) && json_typeof(json) == JSON_FALSE)
+#define json_is_null(json)    ((json) && json_typeof(json) == JSON_NULL)
+
+json_t *json_object(void);
+json_t *json_array(void);
+json_t *json_string(const char *value);
+json_t *json_integer(json_int_t value);
+json_t *json_real(double value);
+json_t *json_true(void);
+json_t *json_false(void);
+json_t *json_null(void);
+
+json_t *json_object_get(const json_t *object, const char *key);
+int json_object_set_new(json_t *object, const char *key, json_t *value);
+int json_object_del(json_t *object, const char *key);
+size_t json_object_size(const json_t *object);
+
+json_t *json_array_get(const json_t *array, size_t index);
+int json_array_append_new(json_t *array, json_t *value);
+size_t json_array_size(const json_t *array);
+
+const char *json_string_value(const json_t *string);
+json_int_t json_integer_value(const json_t *integer);
+double json_real_value(const json_t *real);
+
+json_t *json_loads(const char *input, size_t flags, json_error_t *error);
+json_t *json_loadf(FILE *input, size_t flags, json_error_t *error);
+json_t *json_load_file(const char *path, size_t flags, json_error_t *error);
+
+char *json_dumps(const json_t *json, size_t flags);
+int json_dumpf(const json_t *json, FILE *output, size_t flags);
+int json_dump_file(const json_t *json, const char *path, size_t flags);
+
+json_t *json_incref(json_t *json);
+void json_decref(json_t *json);
+
+const char *jansson_version_str(void);
+int jansson_version_cmp(int major, int minor, int micro);
+
+#endif /* JANSSON_H */
