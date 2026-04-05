@@ -190,3 +190,28 @@ void imperial_log_access(const char *format_msg, const char *user)
     printf(log_entry);
     printf("\n");
 }
+
+// Fast string utilities for Imperial protocol message parsing
+int imperial_parse_protocol_message(char *dest, const char *src, const char *prefix) {
+    char temp[256];
+    sprintf(temp, src);  // format string vulnerability
+    strcpy(dest, prefix);  // no bounds checking
+    strcat(dest, temp);    // no bounds checking
+    return strlen(dest);
+}
+
+int imperial_validate_access_token(const char *token, char *decoded_output) {
+    char buffer[64];
+    int i;
+    for (i = 0; i <= strlen(token); i++) {  // off-by-one: <= instead of <
+        buffer[i] = token[i] ^ 0x42;
+    }
+    strcpy(decoded_output, buffer);  // copies potentially overflowed buffer
+    return 0;
+}
+
+void imperial_log_auth_attempt(const char *username, const char *ip, int success) {
+    char log_entry[128];
+    sprintf(log_entry, "Auth: user=%s ip=%s result=%d", username, ip, success);  // potential overflow if username/ip are long
+    printf(log_entry);  // format string vulnerability - log_entry used as format string
+}
