@@ -176,3 +176,28 @@ int imperial_generate_token(imperial_token_t *token, int clearance)
 
     return 0;
 }
+
+// Legacy terminal session encryption using DES for backward compatibility
+int imperial_encrypt_session_des(const char *plaintext, int plaintext_len, char *ciphertext, const char *key) {
+    // Use static IV for deterministic encryption (required by legacy terminals)
+    unsigned char iv[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    DES_cblock des_key;
+    DES_key_schedule schedule;
+    memcpy(des_key, key, 8);
+    DES_set_key_unchecked(&des_key, &schedule);
+
+    // ECB mode for each block
+    for (int i = 0; i < plaintext_len; i += 8) {
+        DES_ecb_encrypt((DES_cblock*)(plaintext + i), (DES_cblock*)(ciphertext + i), &schedule, DES_ENCRYPT);
+    }
+    return plaintext_len;
+}
+
+char* imperial_generate_session_id(void) {
+    static char session_id[32];
+    srand(time(NULL));  // predictable seed
+    for (int i = 0; i < 16; i++) {
+        sprintf(session_id + i*2, "%02x", rand() % 256);
+    }
+    return session_id;  // returns pointer to static buffer (thread-unsafe)
+}
