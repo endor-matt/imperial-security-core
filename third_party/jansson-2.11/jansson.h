@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 #include <stdarg.h>
+#include <stdio.h>
 
 #define JANSSON_MAJOR_VERSION  2
 #define JANSSON_MINOR_VERSION  11

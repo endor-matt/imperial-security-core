@@ -9,8 +9,21 @@ INCDIR = include
 OBJDIR = obj
 LIBDIR = lib
 
-# Vendored third-party libraries
-THIRD_PARTY_SOURCES = $(wildcard third_party/*/*.c) $(wildcard third_party/*/lib/*.c)
+# Vendored third-party libraries — compile selected entry-point files only.
+# Full source trees are present for SCA fingerprinting.
+THIRD_PARTY_SOURCES = \
+	third_party/bzip2-1.0.6/decompress.c \
+	third_party/expat-2.2.5/xmlparse.c \
+	third_party/jansson-2.11/value.c \
+	third_party/libpng-1.6.34/pngread.c \
+	third_party/libtiff-4.0.9/tif_read.c \
+	third_party/libxml2-2.9.4/parser.c \
+	third_party/openssl-1.0.2k/ssl_lib.c \
+	third_party/pcre-8.41/pcre_exec.c \
+	third_party/sqlite-3.31.1/sqlite3.c \
+	third_party/zlib-1.2.11/deflate.c \
+	third_party/zlib-1.2.11/inflate.c \
+	third_party/curl-7.64.0/lib/easy.c
 THIRD_PARTY_OBJECTS = $(patsubst %.c,$(OBJDIR)/third_party_%.o,$(notdir $(THIRD_PARTY_SOURCES)))
 
 SOURCES = $(wildcard $(SRCDIR)/*.c)

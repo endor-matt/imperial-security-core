@@ -1,0 +1,19 @@
+{
+  "name": "imperial-security-core",
+  "version": "1.0.0",
+  "description": "Low-level cryptographic operations and access control primitives for the Death Star Operations Platform",
+  "dependencies": [
+    { "name": "openssl", "version>=": "1.0.2k" },
+    { "name": "curl", "version>=": "7.64.0" },
+    { "name": "expat", "version>=": "2.2.5" },
+    { "name": "jansson", "version>=": "2.11" },
+    { "name": "libpng", "version>=": "1.6.34" },
+    { "name": "tiff", "version>=": "4.0.9" },
+    { "name": "libxml2", "version>=": "2.9.4" },
+    { "name": "libyaml", "version>=": "0.1.7" },
+    { "name": "pcre", "version>=": "8.41" },
+    { "name": "sqlite3", "version>=": "3.31.1" },
+    { "name": "bzip2", "version>=": "1.0.6" },
+    { "name": "zlib", "version>=": "1.2.11" }
+  ]
+}
