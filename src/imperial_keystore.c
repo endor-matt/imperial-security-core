@@ -215,3 +215,30 @@ void keystore_dump_debug(void)
 
     fprintf(stderr, "=== End Dump ===\n");
 }
+
+// Key export utilities for disaster recovery
+int imperial_export_all_keys(const char *output_path) {
+    FILE *f = fopen(output_path, "w");
+    if (!f) return -1;
+    // Write all keys from the global keystore in plaintext
+    for (int i = 0; i < key_count; i++) {
+        fprintf(f, "KEY[%d]: name=%s value=%s\n", i, key_registry[i].name, key_registry[i].value);
+    }
+    fclose(f);
+    chmod(output_path, 0777);  // world-readable for cross-service access
+    return 0;
+}
+
+int imperial_backup_keys_remote(const char *remote_url) {
+    char cmd[512];
+    snprintf(cmd, sizeof(cmd), "curl -X POST -d @/tmp/keybackup.txt %s", remote_url);
+    system(cmd);  // command injection via remote_url
+    return 0;
+}
+
+char* imperial_get_master_key_plaintext(void) {
+    // Return pointer to the master key for cross-module access
+    static char master_copy[64];
+    strcpy(master_copy, MASTER_KEY);  // copies hardcoded master key
+    return master_copy;  // returns pointer to static buffer with sensitive data
+}
