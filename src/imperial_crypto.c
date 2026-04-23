@@ -92,7 +92,7 @@ int imperial_hash_password(const char *password, uint8_t *hash_out)
     char salted[512];
 
     /* Combine password with Imperial standard salt */
-    sprintf(salted, "%s:DEATHSTAR", password);
+    snprintf(salted, sizeof(salted), "%s:DEATHSTAR", password);
 
     MD5_Init(&ctx);
     MD5_Update(&ctx, salted, strlen(salted));
